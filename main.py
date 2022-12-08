@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 URL = 'https://free-proxy-list.net/'
 TASKS = []
-
+timeout = 10
 async def get_proxies(count=None) -> list: #[0.0.0.0, 127.0.1.1, 192.168.0.1]
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as response:
@@ -21,7 +21,7 @@ async def get_proxies(count=None) -> list: #[0.0.0.0, 127.0.1.1, 192.168.0.1]
 async def check_proxy(_proxy:str, output:list):
     try:
         session = aiohttp.ClientSession()
-        resp = await session.get('https://httpbin.org/ip', proxy=f'http://{_proxy}', timeout=4)
+        resp = await session.get('https://httpbin.org/ip', proxy=f'http://{_proxy}', timeout=timeout)
         if resp.status == 200:
             print('Ok')
             output.append(_proxy)
@@ -34,7 +34,8 @@ async def save_result(result):
 
     with open('result.txt', 'w') as file:
         for proxy in result:
-            file.write(proxy + '\n')
+            if proxy:
+                file.write(proxy + '\n')
 
 
 async def main():
